@@ -45,6 +45,7 @@ with DAG(
                 "destinationTable": {
                     "projectId": PROJECT_ID,
                     "datasetId": RETAIL_DATASET,
+                    "tableId": "online_retail"
                 },
                 "sourceFormat": "CSV",
                 "skipLeadingRows": 1,
