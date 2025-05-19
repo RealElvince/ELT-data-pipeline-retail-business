@@ -1,9 +1,19 @@
 from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.empty import EmptyOperator
-from airflow.operators.bash import BashOperator
+
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateEmptyDatasetOperator, BigQueryInsertJobOperator
-from airflow.providers.google.cloud.transfers.local_to_gcs import LocalFilesystemToGCSOperator
+from dotenv import load_dotenv
+import os
+# Load environment variables from .env file
+load_dotenv()
+PROJECT_ID = os.getenv('PROJECT_ID')
+BUCKET_NAME = os.getenv('BUCKET_NAME')
+RETAIL_DATASET = os.getenv('RETAIL_DATASET')
+
+if not all([PROJECT_ID, BUCKET_NAME, RETAIL_DATASET]):
+    raise ValueError("One or more environment variables are missing: PROJECT_ID, BUCKET_NAME, RETAIL_DATASET")
+
 
 with DAG(
     dag_id='business_retail_pipeline',
@@ -13,34 +23,28 @@ with DAG(
     tags=['gcp', 'dbt', 'retail'],
 ) as dag:
 
-    start = EmptyOperator(task_id='start')
+    start_task = EmptyOperator(task_id='start')
 
-    # Task 1: Upload CSV to GCS
-    upload_csv = LocalFilesystemToGCSOperator(
-        task_id='upload_csv_to_gcs',
-        src='include/dataset/Online_Retail.csv',
-        dst='raw/online_retail.csv',
-        bucket='sales-dataset-bq',
-        mime_type='text/csv'
-    )
+   
 
-    # Task 2: Create BigQuery dataset
+    # Task 1: Create BigQuery dataset
     create_dataset = BigQueryCreateEmptyDatasetOperator(
         task_id='create_bq_dataset',
-        dataset_id='retail_data',
+        dataset_id= RETAIL_DATASET,
+        project_id=PROJECT_ID,
         location='US',
+        exists_ok=True,
     )
 
-    # Task 3: Load CSV from GCS into BigQuery
+    # Task 2: Load CSV from GCS into BigQuery
     load_to_bq = BigQueryInsertJobOperator(
         task_id='load_csv_to_bq',
         configuration={
             "load": {
-                "sourceUris": ["gs://sales-dataset-bq/raw/online_retail.csv"],
+                "sourceUris": [f"gs://{BUCKET_NAME}/retail_sales/Online_Retail.csv"],
                 "destinationTable": {
-                    "projectId": 'data-engineering-458813',
-                    "datasetId": 'retail_data',
-                    "tableId": 'online_retail'
+                    "projectId": PROJECT_ID,
+                    "datasetId": RETAIL_DATASET,
                 },
                 "sourceFormat": "CSV",
                 "skipLeadingRows": 1,
@@ -50,14 +54,10 @@ with DAG(
         },
     )
 
-    # Task 4: Run dbt transformation (assumes dbt is installed and project is in dags/dbt)
-    dbt_run = BashOperator(
-        task_id='dbt_run',
-        bash_command='cd /home/airflow/gcs/dags/dbt && dbt run',
-    )
 
-    end = EmptyOperator(task_id='end')
+
+    end_task= EmptyOperator(task_id='end')
 
     # DAG dependencies
-    start >> upload_csv >> create_dataset >> load_to_bq >> dbt_run >> end
+    start_task >> create_dataset >> load_to_bq >> end_task
 
