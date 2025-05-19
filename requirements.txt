@@ -1,3 +1,5 @@
 apache-airflow-providers-google
 google.cloud
 python-dotenv
+dbt-core
+dbt-bigquery
