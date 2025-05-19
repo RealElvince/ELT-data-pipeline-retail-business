@@ -1,8 +1,0 @@
-project:
-    name: online-retail-dbt
-    description: A dbt project for the online retail dataset
-
-mounts:
-  - source: include
-    target: /usr/local/airflow/include
-
