@@ -1,3 +1,4 @@
 dbt-venv/
 env/
 include/gcp/service_account.json
+airflow_settings.yaml
