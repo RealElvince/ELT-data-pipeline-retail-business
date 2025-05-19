@@ -14,6 +14,17 @@ RETAIL_DATASET = os.getenv('RETAIL_DATASET')
 if not all([PROJECT_ID, BUCKET_NAME, RETAIL_DATASET]):
     raise ValueError("One or more environment variables are missing: PROJECT_ID, BUCKET_NAME, RETAIL_DATASET")
 
+# Define the schema for the CSV file
+schema = [
+    {"name": "InvoiceNo", "type": "STRING"},
+    {"name": "StockCode", "type": "STRING"},
+    {"name": "Description", "type": "STRING"},
+    {"name": "Quantity", "type": "INTEGER"},
+    {"name": "InvoiceDate", "type": "STRING"},  # <--- this avoids parse error
+    {"name": "UnitPrice", "type": "FLOAT"},
+    {"name": "CustomerID", "type": "STRING"},
+    {"name": "Country", "type": "STRING"},
+]
 
 with DAG(
     dag_id='business_retail_pipeline',
@@ -51,6 +62,9 @@ with DAG(
                 "skipLeadingRows": 1,
                 "autodetect": True,
                 "writeDisposition": "WRITE_TRUNCATE",
+                "schema": {
+                    "fields": schema
+                },
             }
         },
     )
