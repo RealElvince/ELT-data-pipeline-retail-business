@@ -20,7 +20,7 @@ schema = [
     {"name": "StockCode", "type": "STRING"},
     {"name": "Description", "type": "STRING"},
     {"name": "Quantity", "type": "INTEGER"},
-    {"name": "InvoiceDate", "type": "STRING"},  # <--- this avoids parse error
+    {"name": "InvoiceDate", "type": "STRING"},  
     {"name": "UnitPrice", "type": "FLOAT"},
     {"name": "CustomerID", "type": "STRING"},
     {"name": "Country", "type": "STRING"},
@@ -60,7 +60,7 @@ with DAG(
                 },
                 "sourceFormat": "CSV",
                 "skipLeadingRows": 1,
-                "autodetect": True,
+                "autodetect": False,
                 "writeDisposition": "WRITE_TRUNCATE",
                 "schema": {
                     "fields": schema
