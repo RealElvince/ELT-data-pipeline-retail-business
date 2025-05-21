@@ -1,2 +1,13 @@
 dbt-venv/
 env/
+# Ignore dbt_project.yml inside dbt_retail
+dbt_retail/dbt_project.yml
+
+# Ignore any sources.yml file inside models/ folders
+dbt_retail/models/**/sources.yml
+
+# Ignore log files and directories
+logs/
+*.log
+
+
