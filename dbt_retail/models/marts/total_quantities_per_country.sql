@@ -7,9 +7,9 @@ WITH quantity_cte AS (
         {{ ref('stg_online_retail') }}
     WHERE Quantity > 0
     GROUP BY
-        country_id
+        total_quantity
     ORDER BY
-        country_id
+        total_quantity DESC
     
 )
 
