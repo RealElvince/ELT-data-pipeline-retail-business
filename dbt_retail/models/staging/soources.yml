@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: retail_dataset
+    database: data-engineering-458813
+    schema: retail_dataset
+    tables:
+      - name: online_retail
