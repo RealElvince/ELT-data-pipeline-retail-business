@@ -5,11 +5,12 @@ WITH quantity_cte AS (
         {{calculate_total_quantity('Quantity')}} AS total_quantity
     FROM
         {{ ref('stg_online_retail') }}
+    WHERE Quantity > 0
     GROUP BY
         country_id
     ORDER BY
         country_id
-    WHERE Quantity > 0
+    
 )
 
 SELECT *
