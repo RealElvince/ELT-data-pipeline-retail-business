@@ -4,7 +4,7 @@ WITH quantity_cte AS (
         Country AS country,
         {{calculate_total_quantity('Quantity')}} AS total_quantity
     FROM
-        {{ ref('sales_data') }}
+        {{ ref('stg_online_retail') }}
     GROUP BY
         country_id
     ORDER BY
