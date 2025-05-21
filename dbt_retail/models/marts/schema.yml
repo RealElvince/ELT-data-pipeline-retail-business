@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: invoice_number_per_country
+    description: "Number of invoices per country with a generated country_id"
+    columns:
+      - name: country_id
+        description: "Surrogate key for the country"
+        tests:
+          - not_null
+          - unique
+
+      - name: country
+        description: "Name of the country"
+        tests:
+          - not_null
+
+      - name: invoice_count
+        description: "Total number of invoices per country"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
