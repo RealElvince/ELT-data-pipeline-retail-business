@@ -10,4 +10,5 @@ dbt_retail/models/**/sources.yml
 logs/
 *.log
 
-
+dbt_retail/profiles.yml
+dbt_retail/gcp/service_account.json
